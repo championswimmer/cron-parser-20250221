@@ -1,0 +1,10 @@
+"use strict";
+function check(cronString) {
+}
+function next(cronString) {
+}
+function main() {
+    console.log(process.argv);
+}
+main();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWFpbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy9tYWluLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFFQSxTQUFTLEtBQUssQ0FBQyxVQUFrQjtBQUVqQyxDQUFDO0FBRUQsU0FBUyxJQUFJLENBQUMsVUFBa0I7QUFFaEMsQ0FBQztBQUVELFNBQVMsSUFBSTtJQUNYLE9BQU8sQ0FBQyxHQUFHLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxDQUFDO0FBQzVCLENBQUM7QUFFRCxJQUFJLEVBQUUsQ0FBQyJ9

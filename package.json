@@ -1,0 +1,20 @@
+{
+  "name": "cron_parser",
+  "version": "0.0.1",
+  "description": "## Overview This command-line tool parses and evaluates cron expressions. It provides two functionalities:",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
