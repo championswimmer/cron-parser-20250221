@@ -12,7 +12,7 @@ describe('Parser', () => {
   });
 
   test('should parse correctly "1-5 1 1 1 1" ', () => {
-    const parsedCron = parseCronString('1 1 1 1 1');
+    const parsedCron = parseCronString('1-5 1 1 1 1');
     expect(parsedCron.minute).toEqual([1, 2, 3, 4, 5]);
     expect(parsedCron.hour).toEqual([1]);
     expect(parsedCron.dayOfMonth).toEqual([1]);
@@ -20,18 +20,63 @@ describe('Parser', () => {
     expect(parsedCron.dayOfWeek).toEqual([1]);
   });
 
+  test('should parse correctly "*/15 9-17 * * 1-5" ', () => {
+    const parsedCron = parseCronString('*/15 9-17 * * 1-5');
+    expect(parsedCron.minute).toEqual([0, 15, 30, 45]);
+    expect(parsedCron.hour).toEqual([9, 10, 11, 12, 13, 14, 15, 16, 17]);
+    expect(parsedCron.dayOfMonth).toEqual(Array.from({ length: 31 }, (_, i) => i + 1));
+    expect(parsedCron.month).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
+    expect(parsedCron.dayOfWeek).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  test('should parse correctly "30 8-18/2 * * *" ', () => {
+    const parsedCron = parseCronString('30 8-18/2 * * *');
+    expect(parsedCron.minute).toEqual([30]);
+    expect(parsedCron.hour).toEqual([8, 10, 12, 14, 16, 18]);
+    expect(parsedCron.dayOfMonth).toEqual(Array.from({ length: 31 }, (_, i) => i + 1));
+    expect(parsedCron.month).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
+    expect(parsedCron.dayOfWeek).toEqual([0, 1, 2, 3, 4, 5, 6]);
+  });
+
+  test('should parse correctly "0 9-17 * * 1-5" ', () => {
+    const parsedCron = parseCronString('0 9-17 * * 1-5');
+    expect(parsedCron.minute).toEqual([0]);
+    expect(parsedCron.hour).toEqual([9, 10, 11, 12, 13, 14, 15, 16, 17]);
+    expect(parsedCron.dayOfMonth).toEqual(Array.from({ length: 31 }, (_, i) => i + 1));
+    expect(parsedCron.month).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
+    expect(parsedCron.dayOfWeek).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  test('should parse correctly "5,10,15,20 * 1,15 * *" ', () => {
+    const parsedCron = parseCronString('5,10,15,20 * 1,15 * *');
+    expect(parsedCron.minute).toEqual([5, 10, 15, 20]);
+    expect(parsedCron.hour).toEqual(Array.from({ length: 24 }, (_, i) => i));
+    expect(parsedCron.dayOfMonth).toEqual([1, 15]);
+    expect(parsedCron.month).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
+    expect(parsedCron.dayOfWeek).toEqual([0, 1, 2, 3, 4, 5, 6]);
+  });
+
   test('should error on invalid cron string "1 1 1 1"', () => {
-    // expect "Invalid Cron String" error
-
     expect(() => parseCronString('1 1 1 1')).toThrowError('Invalid Cron String');
+  });
 
+  test('should error on invalid cron string "1 1 1 1 1 1"', () => {
+    expect(() => parseCronString('1 1 1 1 1 1')).toThrowError('Invalid Cron String');
+  });
+
+  test('should error on invalid cron string with non-numeric values', () => {
+    expect(() => parseCronString('a 1 1 1 1')).toThrowError();
+    expect(() => parseCronString('1 a 1 1 1')).toThrowError();
+    expect(() => parseCronString('1 1 a 1 1')).toThrowError();
+    expect(() => parseCronString('1 1 1 a 1')).toThrowError();
+    expect(() => parseCronString('1 1 1 1 a')).toThrowError();
   });
 })
 
 describe('parseMinute', () => {
   test('should parse correctly "*" ', () => {
     const parsedMinute = parseMinute('*');
-    expect(parsedMinute).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]);
+    expect(parsedMinute).toEqual(Array.from({ length: 60 }, (_, i) => i));
   });
 
   test('should parse correctly "1" ', () => {
@@ -42,6 +87,21 @@ describe('parseMinute', () => {
   test('should parse correctly "1-5" ', () => {
     const parsedMinute = parseMinute('1-5');
     expect(parsedMinute).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  test('should parse correctly "1,3,5,7" ', () => {
+    const parsedMinute = parseMinute('1,3,5,7');
+    expect(parsedMinute).toEqual([1, 3, 5, 7]);
+  });
+
+  test('should parse correctly "*/5" ', () => {
+    const parsedMinute = parseMinute('*/5');
+    expect(parsedMinute).toEqual([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]);
+  });
+
+  test('should parse correctly "*/15" ', () => {
+    const parsedMinute = parseMinute('*/15');
+    expect(parsedMinute).toEqual([0, 15, 30, 45]);
   });
 
   // test 2 overlapping ranges 
@@ -71,7 +131,17 @@ describe('parseMinute', () => {
     // error on passing values outside the range 0-59
     expect(() => parseMinute('60')).toThrowError('Invalid Minute Value');
     expect(() => parseMinute('1-60')).toThrowError('Invalid Minute Value');
-
+    expect(() => parseMinute('-1')).toThrowError('Invalid Minute Value');
   });
 
+  test('should handle edge cases', () => {
+    // Empty string
+    expect(() => parseMinute('')).toThrowError();
+    
+    // Invalid step value
+    expect(() => parseMinute('*/0')).toThrowError();
+    
+    // Invalid range (start > end)
+    expect(() => parseMinute('5-1')).toThrowError();
+  });
 });
